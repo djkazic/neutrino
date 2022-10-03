@@ -858,7 +858,7 @@ func (s *ChainService) getCFilterRest(h chainhash.Hash, hostIndex int) (*wire.Ms
 	filter := &wire.MsgCFilter{}
 	reader := bytes.NewBuffer(bodyBytes)
 	err = filter.Deserialize(reader)
-	if err != nil{
+	if err != nil {
 		return nil, fmt.Errorf("error deserialising object:%w", err)
 	}
 	return filter, nil
@@ -942,12 +942,13 @@ func (s *ChainService) GetCFilter(blockHash chainhash.Hash,
 			defer s.mtxCFilter.Unlock()
 			defer close(query.filterChan)
 
+			quit := make(chan struct{})
 			for j := query.startHeight; j < query.stopHeight+1; j++ {
 
 				// Fetch blockheaders from persistent storage
 				blockHeaders, err := s.BlockHeaders.FetchHeaderByHeight(uint32(j))
 				if err != nil {
-					fmt.Errorf("unable to get header for start "+
+					log.Errorf("unable to get header for start "+
 						"block=%v: %v", blockHash, err)
 					return
 				}
@@ -955,10 +956,9 @@ func (s *ChainService) GetCFilter(blockHash chainhash.Hash,
 
 				filter, err := s.getCFilterRest(hash, RestHostIndex)
 				if err != nil {
-					fmt.Errorf("error: %w", err)
+					log.Errorf("error: %w", err)
 					return
 				}
-				quit := make(chan struct{})
 
 				// imediatly calling on to handle the results
 				s.handleCFiltersResponse(query, filter, quit)
