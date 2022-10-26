@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"net/url"
 	"strconv"
 	"strings"
 	"sync"
@@ -570,6 +571,10 @@ type Config struct {
 	// and be maintained as persistent peers.
 	AddPeers []string
 
+	// RestPeers is a slice of host that should be connected to on startup,
+	// and be maintained as persistent peers that support the Rest API.
+	RestPeers []string
+
 	// Dialer is an optional function closure that will be used to
 	// establish outbound TCP connections. If specified, then the
 	// connection manager will use this in place of net.Dial for all
@@ -670,6 +675,9 @@ type ChainService struct { // nolint:maligned
 	// peerSubscribers is a slice of active peer subscriptions, that we
 	// will notify each time a new peer is connected.
 	peerSubscribers []*peerSubscription
+
+	// restPeers is a slice of peers that suppoorts the rest API.
+	restPeers []string
 
 	// TODO: Add a map for more granular exclusion?
 	mtxCFilter sync.Mutex
@@ -943,6 +951,21 @@ func NewChainService(cfg Config) (*ChainService, error) {
 	permanentPeers := cfg.ConnectPeers
 	if len(permanentPeers) == 0 {
 		permanentPeers = cfg.AddPeers
+	}
+
+	// Adding rest peers to chainservice if spesified in config.
+	if len(cfg.RestPeers) > 0 {
+		// Iterating thought restpeer defined in the config
+		// and checking if the url is ok.
+		for _, restAddr := range cfg.RestPeers {
+			_, err := url.Parse(restAddr)
+			if err != nil {
+				log.Debugf("error unable to parse address: %w", err)
+				continue
+			} else {
+				s.restPeers = append(s.restPeers, restAddr)
+			}
+		}
 	}
 
 	for _, addr := range permanentPeers {
@@ -1626,7 +1649,7 @@ func (s *ChainService) Start() error {
 	return nil
 }
 
-// IsStarted returns true if Start() was called at least once
+// IsStarted returns true if Start() was called at least once.
 func (s *ChainService) IsStarted() bool {
 	return s.started > 0
 }
