@@ -184,7 +184,7 @@ type ServerPeer struct {
 
 // NewServerPeer returns a new ServerPeer instance. The peer needs to be set by
 // the caller.
-func NewServerPeer(s *ChainService, isPersistent bool) *ServerPeer {
+func newServerPeer(s *ChainService, isPersistent bool) *ServerPeer {
 	return &ServerPeer{
 		server:           s,
 		persistent:       isPersistent,
@@ -963,7 +963,7 @@ func NewChainService(cfg Config) (*ChainService, error) {
 	if len(cfg.RestPeers) > 0 {
 		// Iterating thought restpeer defined in the config
 		// and checking if the url is ok.
-		log.Infof("Rest peers are not empty, querying with restpeers")
+		log.Infof("Rest peers are not empty, querying from restpeers")
 		for _, restAddr := range cfg.RestPeers {
 			_, err := url.Parse(restAddr)
 			if err != nil {
@@ -1498,8 +1498,8 @@ func (s *ChainService) SendTransaction(tx *wire.MsgTx) error {
 	return s.broadcaster.Broadcast(tx)
 }
 
-// NewPeerConfig returns the configuration for the given ServerPeer.
-func NewPeerConfig(sp *ServerPeer) *peer.Config {
+// newPeerConfig returns the configuration for the given ServerPeer.
+func newPeerConfig(sp *ServerPeer) *peer.Config {
 	return &peer.Config{
 		Listeners: peer.MessageListeners{
 			OnVersion:   sp.OnVersion,
@@ -1567,8 +1567,8 @@ func (s *ChainService) outboundPeerConnected(c *connmgr.ConnReq, conn net.Conn) 
 		return
 	}
 
-	sp := NewServerPeer(s, c.Permanent)
-	p, err := peer.NewOutboundPeer(NewPeerConfig(sp), peerAddr)
+	sp := newServerPeer(s, c.Permanent)
+	p, err := peer.NewOutboundPeer(newPeerConfig(sp), peerAddr)
 	if err != nil {
 		log.Debugf("Cannot create outbound peer %s: %s", c.Addr, err)
 		disconnect()
