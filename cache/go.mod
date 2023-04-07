@@ -2,13 +2,14 @@ module github.com/djkazic/neutrino/cache
 
 go 1.20
 
-replace github.com/lightninglabs/neutrino/cache => ./cache
+replace github.com/lightninglabs/neutrino/cache => ../cache
 
 require (
 	github.com/btcsuite/btcd v0.23.4
 	github.com/btcsuite/btcd/btcutil v1.1.3
 	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.2
 	github.com/lightninglabs/neutrino v0.15.0
+	github.com/lightninglabs/neutrino/cache v1.1.0
 )
 
 require (
