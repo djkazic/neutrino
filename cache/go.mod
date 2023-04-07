@@ -1,4 +1,4 @@
-module github.com/lightninglabs/neutrino/cache
+module github.com/djkazic/neutrino/cache
 
 go 1.20
 
