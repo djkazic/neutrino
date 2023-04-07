@@ -1,4 +1,4 @@
-module github.com/lightninglabs/neutrino
+module github.com/djkazic/neutrino
 
 require (
 	github.com/btcsuite/btcd v0.23.3
