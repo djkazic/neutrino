@@ -49,7 +49,7 @@ var (
 	// each peer before we've concluded we aren't going to get a valid
 	// response. This allows to make up for missed messages in some
 	// instances.
-	QueryNumRetries = 4
+	QueryNumRetries = 8
 
 	// QueryPeerConnectTimeout specifies how long to wait for the
 	// underlying chain service to connect to a peer before giving up
@@ -294,7 +294,7 @@ func (s *ChainService) queryAllPeers(
 	// Starting with the set of default options, we'll apply any specified
 	// functional options to the query.
 	qo := defaultQueryOptions()
-	qo.numRetries = 1
+	qo.numRetries = 8
 	qo.applyQueryOptions(options...)
 
 	// This is done in a single-threaded query because the peerState is
