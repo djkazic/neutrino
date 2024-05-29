@@ -753,7 +753,7 @@ func NewChainService(cfg Config) (*ChainService, error) {
 	if s.persistToDisk {
 		cfg := &chanutils.BatchWriterConfig[*filterdb.FilterData]{
 			QueueBufferSize:        chanutils.DefaultQueueSize,
-			MaxBatch:               10,
+			MaxBatch:               100,
 			DBWritesTickerDuration: time.Millisecond * 500,
 			PutItems:               s.FilterDB.PutFilters,
 		}
